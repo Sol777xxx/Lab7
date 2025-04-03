@@ -9,7 +9,7 @@ namespace Domain
 {
     internal class Hotel 
     {
-        public void LalaMenu() { }
+
     }
 
 }
