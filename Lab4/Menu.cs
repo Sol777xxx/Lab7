@@ -149,8 +149,9 @@ public class Menu
                 Console.WriteLine("1. Забронювати кімнату");
                 Console.WriteLine("2. Видалити бронювання");
                 Console.WriteLine("3. Зняти бронювання (скасувати)");
-                Console.WriteLine("4. Показати всі бронювання");
-                Console.WriteLine("5. Показати активні бронювання");
+                Console.WriteLine("4. Відновити скасоване бронювання");
+                Console.WriteLine("5. Показати всі бронювання");
+                Console.WriteLine("6. Показати активні бронювання");
                 Console.WriteLine("0. Назад");
 
                 var choice = Console.ReadLine();
@@ -159,8 +160,9 @@ public class Menu
                     case "1": BookRoom(); break;
                     case "2": DeleteBooking(); break;
                     case "3": CancelBooking(); break;
-                    case "4": ShowAllBookings(); break;
-                    case "5": ShowActiveBookings(); break;
+                    case "4":RestoreBooking(); break;
+                    case "5": ShowAllBookings(); break;
+                    case "6": ShowActiveBookings(); break;
                     case "0": return;
                     default: Console.WriteLine("Невірний вибір."); break;
                 }
@@ -175,13 +177,28 @@ public class Menu
             bool result = hotelService.CancelBooking(id);
             Console.WriteLine(result ? "Бронювання скасовано." : "Не вдалося скасувати.");
         }
+        private void RestoreBooking()
+        {
+            Console.Write("ID бронювання: ");
+            int id = int.Parse(Console.ReadLine());
+
+            bool result = hotelService.RestoreBooking(id);
+            Console.WriteLine(result ? "Бронювання відновлено." : "Не вдалося відновити.");
+        }
 
         private void ShowActiveBookings()
         {
             var bookings = hotelService.GetActiveBookings();
             Console.WriteLine("--- Активні бронювання ---");
-            foreach (var b in bookings)
-                Console.WriteLine($"ID: {b.BookingId}, Кімната: {b.RoomId}, Клієнт: {b.ClientId}, {b.StartDate:yyyy-MM-dd} — {b.EndDate:yyyy-MM-dd}");
+            foreach (var booking in bookings)
+            {
+                Console.WriteLine($"ID: {booking.BookingId}, " +
+                  $"Кімната: {booking.RoomId}, " +
+                  $"Клієнт: ID:{booking.ClientId}, " +
+                  $"Активне: {(booking.IsActive ? "Так" : "Ні")}, " +
+                  $"Початок: {booking.StartDate:dd.MM.yyyy}, " +
+                  $"Кінець: {booking.EndDate:dd.MM.yyyy}");
+            }
         }
 
 
@@ -271,14 +288,10 @@ public class Menu
         {
             Console.Write("Категорія (0 - Cheap, 1 - Standard, 2 - Expensive): ");
             var cat = (Categories)int.Parse(Console.ReadLine());
-
-            Console.Write("Статус (0 - Available, 1 - Booked, 2 - Occupied): ");
-            var status = (RoomStatus)int.Parse(Console.ReadLine());
-
             var room = new Room
             {
                 Category = cat,
-                Status = status
+                Status = RoomStatus.Available
             };
 
             hotelService.AddRoom(room);
@@ -306,9 +319,13 @@ public class Menu
                     Console.WriteLine("Помилка: Кімната не знайдена!");
                     return;
                 }
+                if (room.Status != RoomStatus.Available)
+                {
+                    Console.WriteLine($"Помилка: Кімната вже заброньована або заселена!");
+                    return;
+                }
 
-                
-                int days = (end - start).Days;
+            int days = (end - start).Days;
                 if (days <= 0)
                 {
                     Console.WriteLine("Помилка: Невірний період бронювання!");

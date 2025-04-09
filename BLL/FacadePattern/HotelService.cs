@@ -28,10 +28,50 @@ namespace BLL.FacadePattern
             _pricing = pricing ?? throw new ArgumentNullException(nameof(pricing));
         }
         public void AddClient(Client client) => _clientRepository.Create(client);
-        public void AddRoom(Room room) => _roomRepository.Create(room);
-        public void DeleteClient(int id) => _clientRepository.DeleteByID(id);
+        public void AddRoom(Room room)
+{
+            room.PricePerNight = _pricing.CalculatePrice(room.Category);// 💰 автоматично встановлюємо ціну
+            _roomRepository.Create(room);
+}
+        public void DeleteClient(int id)
+        {
+            var client = _clientRepository.GetById(id);
+            if (client == null) return;
+
+            foreach (var booking in client.Bookings.Where(b => b.IsActive))
+            {
+                booking.IsActive = false;
+                booking.Room.Status = RoomStatus.Available;
+
+                _roomRepository.Update(booking.Room);
+                _bookingRepository.Update(booking); // ❗ важливо, бо booking змінено
+            }
+
+            _clientRepository.Delete(client);
+        }
         public void DeleteRoom(int id) => _roomRepository.DeleteByID(id);
-        public void DeleteBooking(int id) => _bookingRepository.DeleteByID(id);
+        public void DeleteBooking(int id)
+        {
+            var booking = _bookingRepository.GetById(id);
+            if (booking == null) return;
+
+            _bookingRepository.Delete(booking);
+
+            // Після видалення бронювання перевіряємо, чи є ще активні для цієї кімнати
+            var activeBookings = _bookingRepository.GetAll()
+                .Where(b => b.RoomId == booking.RoomId && b.IsActive && b.BookingId != booking.BookingId)
+                .ToList();
+
+            if (activeBookings.Count == 0)
+            {
+                var room = _roomRepository.GetById(booking.RoomId);
+                if (room != null && room.Status != RoomStatus.Available)
+                {
+                    room.Status = RoomStatus.Available;
+                    _roomRepository.Update(room);
+                }
+            }
+        }
         public List<Room> GetAllRooms() => _roomRepository.GetAll().ToList();
         public List<Room> GetAvailableRooms() => _roomRepository.GetAvailableRooms().ToList();
         public Room GetRoomById(int roomId) => _roomRepository.GetById(roomId);
@@ -86,7 +126,9 @@ namespace BLL.FacadePattern
             return true;
         }
 
+
         // Facade method: Зняття броні
+
         public bool CancelBooking(int bookingId)
         {
             var booking = _bookingRepository.GetById(bookingId);
@@ -94,13 +136,34 @@ namespace BLL.FacadePattern
                 return false;
 
             booking.IsActive = false;
-            booking.Room.Status = RoomStatus.Available;
+            var room = _roomRepository.GetById(booking.RoomId);
+            if (room != null && room.Status == RoomStatus.Booked)
+            {
+                room.Status = RoomStatus.Available;
+                _roomRepository.Update(room);
+            }
 
             _bookingRepository.Update(booking);
-            _roomRepository.SaveChanges();
             return true;
         }
+        public bool RestoreBooking(int bookingId)
+        {
+            var booking = _bookingRepository.GetById(bookingId);
+            if (booking == null || booking.IsActive)
+                return false;
 
+            var room = _roomRepository.GetById(booking.RoomId);
+            if (room == null || room.Status != RoomStatus.Available)
+                return false;
+
+            booking.IsActive = true;
+            room.Status = RoomStatus.Booked;
+
+            _bookingRepository.Update(booking);
+            _roomRepository.Update(room);
+
+            return true;
+        }
         // Facade method: Отримати ціну
         public decimal GetRoomPrice(Room room)
         {
