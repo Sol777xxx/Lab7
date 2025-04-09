@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Repository
 {
-    internal class ClientRepository: BaseRepository
+    public class ClientRepository: BaseRepository
     {
         public ClientRepository(HotelContext context) : base(context)
         {
@@ -31,6 +32,48 @@ namespace Domain.Repository
                 Delete(client);
             }
             SaveChanges();
+        }
+        public void Update(Client client)
+        {
+            DBContext.Entry(client).State = EntityState.Modified;
+            SaveChanges();
+        }
+        // Query methods
+        public Client GetById(int clientId)
+        {
+            return DBContext.Clients
+                .Include(c => c.Bookings)
+                .FirstOrDefault(c => c.ClientId == clientId);
+        }
+
+        public IEnumerable<Client> GetAll()
+        {
+            return DBContext.Clients
+                .Include(c => c.Bookings)
+                .AsNoTracking()
+                .ToList();
+        }
+
+        public IEnumerable<Client> GetClientsWithActiveBookings()
+        {
+            return DBContext.Clients
+                .Where(c => c.Bookings.Any(b => b.IsActive))
+                .Include(c => c.Bookings)
+                .ToList();
+        }
+        public IEnumerable<Client> SearchClients(string name = null, string surname = null)
+        {
+            var query = DBContext.Clients
+                .Include(c => c.Bookings)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(name))
+                query = query.Where(c => c.Name.Contains(name.Trim()));
+
+            if (!string.IsNullOrWhiteSpace(surname))
+                query = query.Where(c => c.SurName.Contains(surname.Trim()));
+
+            return query.AsNoTracking().ToList();
         }
         public void SaveChanges()
         {
