@@ -21,9 +21,15 @@ namespace Domain
                 "C:\\Users\\Asus\\Desktop\\Поточні дз\\2Course2\\ArhitecLabs\\Lab4All\\Domain\\hotel.db";
         }
 
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlite($"Data Source={DataBasePath}");
+        //}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite($"Data Source={DataBasePath}");
+            optionsBuilder
+                .UseLazyLoadingProxies()
+                .UseSqlite($"Data Source={DataBasePath}"); 
         }
     }
 

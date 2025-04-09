@@ -1,6 +1,5 @@
 ﻿namespace Domain.Models;
 
-
 public class Room
 {
     public int RoomId { get; set; }
@@ -10,7 +9,7 @@ public class Room
     public decimal PricePerNight { get; set; }
 
     // зв’язок 1:M
-    public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+    public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 }
 public enum RoomStatus
 {

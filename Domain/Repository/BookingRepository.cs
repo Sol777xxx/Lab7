@@ -39,7 +39,7 @@ namespace Domain.Repository
             DBContext.Entry(booking).State = EntityState.Modified;
             SaveChanges();
         }
-        public Booking GetById(int bookingId)
+        public Booking? GetById(int bookingId)
         {
             return DBContext.Bookings
                 .Include(b => b.Room)

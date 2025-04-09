@@ -38,8 +38,8 @@ namespace Domain.Repository
             DBContext.Entry(room).State = EntityState.Modified;
             SaveChanges();
         }
-        // Query methods
-        public Room GetById(int roomId)
+
+        public Room? GetById(int roomId)
         {
             return DBContext.Rooms
                 .Include(r => r.Bookings)

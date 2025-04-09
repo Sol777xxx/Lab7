@@ -13,7 +13,7 @@ namespace Domain.Models
         public required string SurName { get; set; }
 
         // зв’язок 1:M
-        public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
        
 
     }

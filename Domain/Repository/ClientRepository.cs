@@ -38,14 +38,18 @@ namespace Domain.Repository
             DBContext.Entry(client).State = EntityState.Modified;
             SaveChanges();
         }
-        // Query methods
-        public Client GetById(int clientId)
+
+        public Client? GetById(int clientId)
         {
             return DBContext.Clients
                 .Include(c => c.Bookings)
                 .FirstOrDefault(c => c.ClientId == clientId);
         }
 
+        public Client? GetByIdLazy(int clientId)
+        {
+            return DBContext.Clients.FirstOrDefault(c => c.ClientId == clientId); // для демонстрації
+        }
         public IEnumerable<Client> GetAll()
         {
             return DBContext.Clients

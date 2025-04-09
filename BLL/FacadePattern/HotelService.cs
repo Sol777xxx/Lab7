@@ -11,10 +11,11 @@ namespace BLL.FacadePattern
 {
     public class HotelService
     {
+        // підсистеми
         private readonly RoomRepository _roomRepository;
         private readonly BookingRepository _bookingRepository;
         private readonly ClientRepository _clientRepository;
-        private readonly IPricing _pricing;
+        private readonly IPricing _pricing;//Сontext
 
         public HotelService(
             RoomRepository roomRepository,
@@ -27,10 +28,11 @@ namespace BLL.FacadePattern
             _clientRepository = clientRepository ?? throw new ArgumentNullException(nameof(clientRepository));
             _pricing = pricing ?? throw new ArgumentNullException(nameof(pricing));
         }
+        //реалізує логіку бронювання, скасування, пошуку, і тд
         public void AddClient(Client client) => _clientRepository.Create(client);
         public void AddRoom(Room room)
 {
-            room.PricePerNight = _pricing.CalculatePrice(room.Category);// 💰 автоматично встановлюємо ціну
+            room.PricePerNight = _pricing.CalculatePrice(room.Category);
             _roomRepository.Create(room);
 }
         public void DeleteClient(int id)
@@ -44,7 +46,7 @@ namespace BLL.FacadePattern
                 booking.Room.Status = RoomStatus.Available;
 
                 _roomRepository.Update(booking.Room);
-                _bookingRepository.Update(booking); // ❗ важливо, бо booking змінено
+                _bookingRepository.Update(booking);
             }
 
             _clientRepository.Delete(client);
@@ -57,7 +59,6 @@ namespace BLL.FacadePattern
 
             _bookingRepository.Delete(booking);
 
-            // Після видалення бронювання перевіряємо, чи є ще активні для цієї кімнати
             var activeBookings = _bookingRepository.GetAll()
                 .Where(b => b.RoomId == booking.RoomId && b.IsActive && b.BookingId != booking.BookingId)
                 .ToList();
@@ -74,12 +75,12 @@ namespace BLL.FacadePattern
         }
         public List<Room> GetAllRooms() => _roomRepository.GetAll().ToList();
         public List<Room> GetAvailableRooms() => _roomRepository.GetAvailableRooms().ToList();
-        public Room GetRoomById(int roomId) => _roomRepository.GetById(roomId);
+        public Room? GetRoomById(int roomId) => _roomRepository.GetById(roomId);
         public void UpdateRoom(Room room) => _roomRepository.Update(room);
         public void ChangeRoomStatus(int roomId, RoomStatus status) => _roomRepository.ChangeRoomStatus(roomId, status);
 
         public List<Client> GetAllClients() => _clientRepository.GetAll().ToList();
-        public Client GetClientById(int clientId) => _clientRepository.GetById(clientId);
+        public Client? GetClientById(int clientId) => _clientRepository.GetById(clientId);
         public void UpdateClient(Client client) => _clientRepository.Update(client);
         public List<Client> GetClientsWithActiveBookings() => _clientRepository.GetClientsWithActiveBookings().ToList();
         public List<Client> SearchClients(string name = null, string surname = null) =>
@@ -87,10 +88,9 @@ namespace BLL.FacadePattern
 
         public List<Booking> GetAllBookings() => _bookingRepository.GetAll().ToList();
         public List<Booking> GetActiveBookings() => _bookingRepository.GetActiveBookings().ToList();
-        public Booking GetBookingById(int bookingId) => _bookingRepository.GetById(bookingId);
+        public Booking? GetBookingById(int bookingId) => _bookingRepository.GetById(bookingId);
         public void UpdateBooking(Booking booking) => _bookingRepository.Update(booking);
 
-        // Facade method: Пошук вільних номерів
         public List<Room> FindAvailableRooms()
         {
             return _roomRepository.GetAll()
@@ -98,7 +98,6 @@ namespace BLL.FacadePattern
                 .ToList();
         }
 
-        // Facade method: Бронювання номеру
         public bool BookRoom(int roomId, int clientId, DateTime start, DateTime end)
         {
             var room = _roomRepository.GetById(roomId);
@@ -125,9 +124,6 @@ namespace BLL.FacadePattern
             _roomRepository.SaveChanges();
             return true;
         }
-
-
-        // Facade method: Зняття броні
 
         public bool CancelBooking(int bookingId)
         {
@@ -164,7 +160,6 @@ namespace BLL.FacadePattern
 
             return true;
         }
-        // Facade method: Отримати ціну
         public decimal GetRoomPrice(Room room)
         {
             if (room == null)
