@@ -31,10 +31,10 @@ namespace BLL.FacadePattern
         //реалізує логіку бронювання, скасування, пошуку, і тд
         public void AddClient(Client client) => _clientRepository.Create(client);
         public void AddRoom(Room room)
-{
+        {
             room.PricePerNight = _pricing.CalculatePrice(room.Category);
             _roomRepository.Create(room);
-}
+        }
         public void DeleteClient(int id)
         {
             var client = _clientRepository.GetById(id);
