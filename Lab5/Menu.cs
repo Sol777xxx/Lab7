@@ -1,9 +1,7 @@
 ﻿using BLL;
 using BLL.FacadePattern;
 using BLL.StrategyPattern;
-using Domain;
-using Domain.Models;
-using Domain.Repository;
+using BLL.Models;
 using System;
 
 public class Menu
@@ -17,14 +15,8 @@ public class Menu
     }
     public static Menu Create()
     {
-        var context = new HotelContext();
-        var roomRepo = new RoomRepository(context);
-        var clientRepo = new ClientRepository(context);
-        var bookingRepo = new BookingRepository(context);
         IPricing pricing = new DefaultPricing();
-
-        var hotelService = new HotelService(roomRepo, bookingRepo, clientRepo, pricing);
-
+        var hotelService = new HotelService(pricing); // Фасад вже інкапсулює репозиторії
         return new Menu(hotelService);
     }
 

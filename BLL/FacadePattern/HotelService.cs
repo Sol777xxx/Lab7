@@ -1,110 +1,113 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Models;
-using Domain.Repository;
+using BLL.Models;
 using BLL.StrategyPattern;
+using Domain.Models;
+using Domain.UoW;
+using BLL.Mappers;
 
 namespace BLL.FacadePattern
 {
-    public class HotelService
+    public class HotelService : IDisposable
     {
-        // підсистеми
-        private readonly RoomRepository _roomRepository;
-        private readonly BookingRepository _bookingRepository;
-        private readonly ClientRepository _clientRepository;
-        private readonly IPricing _pricing;//Сontext
+        private readonly UnitOfWork _unitOfWork;
+        private readonly IPricing _pricing;
 
-        public HotelService(
-            RoomRepository roomRepository,
-            BookingRepository bookingRepository,
-            ClientRepository clientRepository,
-            IPricing pricing)
+        public HotelService(IPricing pricing)
         {
-            _roomRepository = roomRepository ?? throw new ArgumentNullException(nameof(roomRepository));
-            _bookingRepository = bookingRepository ?? throw new ArgumentNullException(nameof(bookingRepository));
-            _clientRepository = clientRepository ?? throw new ArgumentNullException(nameof(clientRepository));
+            _unitOfWork = new UnitOfWork();
             _pricing = pricing ?? throw new ArgumentNullException(nameof(pricing));
         }
-        //реалізує логіку бронювання, скасування, пошуку, і тд
-        public void AddClient(Client client) => _clientRepository.Create(client);
-        public void AddRoom(Room room)
+
+        // ==== CLIENTS ====
+        public void AddClient(ClientBLLModel clientModel)
         {
-            room.PricePerNight = _pricing.CalculatePrice(room.Category);
-            _roomRepository.Create(room);
+            var client = AutoMapper.MapToDomain(clientModel);
+            _unitOfWork.ClientRepository.Create(client);
+            _unitOfWork.Complete();
         }
-        public void DeleteClient(int id)
+
+        public List<ClientBLLModel> GetAllClients()
         {
-            var client = _clientRepository.GetById(id);
+            return _unitOfWork.ClientRepository.GetAll()
+                .Select(AutoMapper.MapToBLL)
+                .ToList();
+        }
+
+        public void DeleteClient(int clientId)
+        {
+            var client = _unitOfWork.ClientRepository.GetById(clientId);
             if (client == null) return;
 
             foreach (var booking in client.Bookings.Where(b => b.IsActive))
             {
                 booking.IsActive = false;
-                booking.Room.Status = RoomStatus.Available;
-
-                _roomRepository.Update(booking.Room);
-                _bookingRepository.Update(booking);
+                booking.Room.Status = Domain.Models.RoomStatus.Available;
+                _unitOfWork.RoomRepository.Update(booking.Room);
+                _unitOfWork.BookingRepository.Update(booking);
             }
 
-            _clientRepository.Delete(client);
+            _unitOfWork.ClientRepository.Delete(client);
+            _unitOfWork.Complete();
         }
-        public void DeleteRoom(int id) => _roomRepository.DeleteByID(id);
-        public void DeleteBooking(int id)
+
+        // ==== ROOMS ====
+        public void AddRoom(RoomBLLModel roomModel)
         {
-            var booking = _bookingRepository.GetById(id);
-            if (booking == null) return;
+            if (roomModel == null)
+                throw new ArgumentNullException(nameof(roomModel));
 
-            _bookingRepository.Delete(booking);
+            var room = AutoMapper.MapToDomain(roomModel);
+            room.PricePerNight = _pricing.CalculatePrice(room.Category);
+            _unitOfWork.RoomRepository.Create(room);
+            _unitOfWork.Complete();
+        }
 
-            var activeBookings = _bookingRepository.GetAll()
-                .Where(b => b.RoomId == booking.RoomId && b.IsActive && b.BookingId != booking.BookingId)
+        public List<RoomBLLModel> GetAllRooms()
+        {
+            return _unitOfWork.RoomRepository.GetAll()
+                .Select(AutoMapper.MapToBLL)
                 .ToList();
+        }
 
-            if (activeBookings.Count == 0)
+        public List<RoomBLLModel> GetAvailableRooms()
+        {
+            return _unitOfWork.RoomRepository.GetAll()
+                .Where(r => r.Status == Domain.Models.RoomStatus.Available)
+                .Select(AutoMapper.MapToBLL)
+                .ToList();
+        }
+
+        public void ChangeRoomStatus(int roomId, BLL.Models.RoomStatus status)
+        {
+            var room = _unitOfWork.RoomRepository.GetById(roomId);
+            if (room != null)
             {
-                var room = _roomRepository.GetById(booking.RoomId);
-                if (room != null && room.Status != RoomStatus.Available)
-                {
-                    room.Status = RoomStatus.Available;
-                    _roomRepository.Update(room);
-                }
+                room.Status = AutoMapper.MapToDomain(status);
+                _unitOfWork.RoomRepository.Update(room);
+                _unitOfWork.Complete();
             }
         }
-        public List<Room> GetAllRooms() => _roomRepository.GetAll().ToList();
-        public List<Room> GetAvailableRooms() => _roomRepository.GetAvailableRooms().ToList();
-        public Room? GetRoomById(int roomId) => _roomRepository.GetById(roomId);
-        public void UpdateRoom(Room room) => _roomRepository.Update(room);
-        public void ChangeRoomStatus(int roomId, RoomStatus status) => _roomRepository.ChangeRoomStatus(roomId, status);
 
-        public List<Client> GetAllClients() => _clientRepository.GetAll().ToList();
-        public Client? GetClientById(int clientId) => _clientRepository.GetById(clientId);
-        public void UpdateClient(Client client) => _clientRepository.Update(client);
-        public List<Client> GetClientsWithActiveBookings() => _clientRepository.GetClientsWithActiveBookings().ToList();
-        public List<Client> SearchClients(string name = null, string surname = null) =>
-            _clientRepository.SearchClients(name, surname).ToList();
-
-        public List<Booking> GetAllBookings() => _bookingRepository.GetAll().ToList();
-        public List<Booking> GetActiveBookings() => _bookingRepository.GetActiveBookings().ToList();
-        public Booking? GetBookingById(int bookingId) => _bookingRepository.GetById(bookingId);
-        public void UpdateBooking(Booking booking) => _bookingRepository.Update(booking);
-
-        public List<Room> FindAvailableRooms()
+        public void DeleteRoom(int roomId)
         {
-            return _roomRepository.GetAll()
-                .Where(r => r.Status == RoomStatus.Available)
-                .ToList();
+            var room = _unitOfWork.RoomRepository.GetById(roomId);
+            if (room != null)
+            {
+                _unitOfWork.RoomRepository.Delete(room);
+                _unitOfWork.Complete();
+            }
         }
 
+        // ==== BOOKINGS ====
         public bool BookRoom(int roomId, int clientId, DateTime start, DateTime end)
         {
-            var room = _roomRepository.GetById(roomId);
-            if (room == null || room.Status != RoomStatus.Available)
+            var room = _unitOfWork.RoomRepository.GetById(roomId);
+            if (room == null || room.Status != Domain.Models.RoomStatus.Available)
                 return false;
 
-            var client = _clientRepository.GetById(clientId);
+            var client = _unitOfWork.ClientRepository.GetById(clientId);
             if (client == null)
                 return false;
 
@@ -119,54 +122,70 @@ namespace BLL.FacadePattern
                 Client = client
             };
 
-            _bookingRepository.Create(booking);
-            room.Status = RoomStatus.Booked;
-            _roomRepository.SaveChanges();
+            _unitOfWork.BookingRepository.Create(booking);
+            room.Status = Domain.Models.RoomStatus.Booked;
+            _unitOfWork.RoomRepository.Update(room);
+            _unitOfWork.Complete();
             return true;
         }
 
         public bool CancelBooking(int bookingId)
         {
-            var booking = _bookingRepository.GetById(bookingId);
+            var booking = _unitOfWork.BookingRepository.GetById(bookingId);
             if (booking == null || !booking.IsActive)
                 return false;
 
             booking.IsActive = false;
-            var room = _roomRepository.GetById(booking.RoomId);
-            if (room != null && room.Status == RoomStatus.Booked)
+            var room = _unitOfWork.RoomRepository.GetById(booking.RoomId);
+            if (room != null && room.Status == Domain.Models.RoomStatus.Booked)
             {
-                room.Status = RoomStatus.Available;
-                _roomRepository.Update(room);
+                room.Status = Domain.Models.RoomStatus.Available;
+                _unitOfWork.RoomRepository.Update(room);
             }
 
-            _bookingRepository.Update(booking);
+            _unitOfWork.BookingRepository.Update(booking);
+            _unitOfWork.Complete();
             return true;
         }
+
         public bool RestoreBooking(int bookingId)
         {
-            var booking = _bookingRepository.GetById(bookingId);
+            var booking = _unitOfWork.BookingRepository.GetById(bookingId);
             if (booking == null || booking.IsActive)
                 return false;
 
-            var room = _roomRepository.GetById(booking.RoomId);
-            if (room == null || room.Status != RoomStatus.Available)
+            var room = _unitOfWork.RoomRepository.GetById(booking.RoomId);
+            if (room == null || room.Status != Domain.Models.RoomStatus.Available)
                 return false;
 
             booking.IsActive = true;
-            room.Status = RoomStatus.Booked;
-
-            _bookingRepository.Update(booking);
-            _roomRepository.Update(room);
-
+            room.Status = Domain.Models.RoomStatus.Booked;
+            _unitOfWork.BookingRepository.Update(booking);
+            _unitOfWork.RoomRepository.Update(room);
+            _unitOfWork.Complete();
             return true;
         }
-        public decimal GetRoomPrice(Room room)
-        {
-            if (room == null)
-                throw new ArgumentNullException(nameof(room));
 
+        public List<BookingBLLModel> GetActiveBookings()
+        {
+            return _unitOfWork.BookingRepository.GetAll()
+                .Where(b => b.IsActive)
+                .Select(AutoMapper.MapToBLL)
+                .ToList();
+        }
+
+        public decimal GetRoomPrice(RoomBLLModel roomModel)
+        {
+            if (roomModel == null)
+                throw new ArgumentNullException(nameof(roomModel));
+
+            var room = AutoMapper.MapToDomain(roomModel);
             return _pricing.CalculatePrice(room.Category);
         }
 
+        public void Dispose()
+        {
+            _unitOfWork?.Dispose();
+        }
     }
 }
