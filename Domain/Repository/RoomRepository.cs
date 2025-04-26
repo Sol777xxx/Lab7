@@ -1,62 +1,19 @@
 ﻿using Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Repository
 {
-    public class RoomRepository : BaseRepository
+    public class RoomRepository : GenericRepository<Room>
     {
         public RoomRepository(HotelContext context) : base(context)
         {
         }
-        public void Create(Room room)
-        {
-            DBContext.Rooms.Add(room);
-            SaveChanges();
-        }
-
-        public void Delete(Room room)
-        {
-            DBContext.Rooms.Remove(room);
-            SaveChanges();
-        }
-
-        public void DeleteByID(int roomId)
-        {
-            var room = DBContext.Rooms.Find(roomId);
-            if (room != null)
-            {
-                Delete(room);
-            }
-        }
-        public void Update(Room room)
-        {
-            DBContext.Entry(room).State = EntityState.Modified;
-            SaveChanges();
-        }
-
-        public Room? GetById(int roomId)
-        {
-            return DBContext.Rooms
-                .Include(r => r.Bookings)
-                .FirstOrDefault(r => r.RoomId == roomId);
-        }
-
-        public IEnumerable<Room> GetAll()
-        {
-            return DBContext.Rooms
-                .Include(r => r.Bookings)
-                .AsNoTracking()
-                .ToList();
-        }
 
         public IEnumerable<Room> GetAvailableRooms()
         {
-            return DBContext.Rooms
+            return Context.Rooms
                 .Where(r => r.Status == RoomStatus.Available)
                 .Include(r => r.Bookings)
                 .ToList();
@@ -71,10 +28,11 @@ namespace Domain.Repository
                 Update(room);
             }
         }
-        public void SaveChanges()
+        public override Room? GetById(int id)
         {
-            DBContext.SaveChanges();
+            return Context.Rooms
+                .Include(r => r.Bookings)
+                .FirstOrDefault(r => r.RoomId == id);
         }
     }
 }
-

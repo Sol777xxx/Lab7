@@ -1,73 +1,27 @@
 ﻿using Domain.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Repository
 {
-    public class ClientRepository: BaseRepository
+    public class ClientRepository : GenericRepository<Client>
     {
         public ClientRepository(HotelContext context) : base(context)
         {
         }
-        public void Create(Client client)
-        {
-            DBContext.Clients.Add(client);
-            SaveChanges();
-
-        }
-        public void Delete(Client client)
-        {
-            DBContext.Clients.Remove(client);
-            SaveChanges();
-        }
-        public void DeleteByID(int clientId)
-        {
-            var client = DBContext.Clients.Find(clientId);
-            if (client != null)
-            {
-                Delete(client);
-            }
-            SaveChanges();
-        }
-        public void Update(Client client)
-        {
-            DBContext.Entry(client).State = EntityState.Modified;
-            SaveChanges();
-        }
-
-        public Client? GetById(int clientId)
-        {
-            return DBContext.Clients
-                .Include(c => c.Bookings)
-                .FirstOrDefault(c => c.ClientId == clientId);
-        }
-
-        public Client? GetByIdLazy(int clientId)
-        {
-            return DBContext.Clients.FirstOrDefault(c => c.ClientId == clientId); // для демонстрації
-        }
-        public IEnumerable<Client> GetAll()
-        {
-            return DBContext.Clients
-                .Include(c => c.Bookings)
-                .AsNoTracking()
-                .ToList();
-        }
 
         public IEnumerable<Client> GetClientsWithActiveBookings()
         {
-            return DBContext.Clients
+            return Context.Clients
                 .Where(c => c.Bookings.Any(b => b.IsActive))
                 .Include(c => c.Bookings)
                 .ToList();
         }
+
         public IEnumerable<Client> SearchClients(string name = null, string surname = null)
         {
-            var query = DBContext.Clients
+            var query = Context.Clients
                 .Include(c => c.Bookings)
                 .AsQueryable();
 
@@ -79,11 +33,18 @@ namespace Domain.Repository
 
             return query.AsNoTracking().ToList();
         }
-        public void SaveChanges()
-        {
-            DBContext.SaveChanges();
 
+        public override Client? GetById(int id)
+        {
+            return Context.Clients
+                .Include(c => c.Bookings)
+                .FirstOrDefault(c => c.ClientId == id);
         }
+
+        public Client? GetByIdLazy(int clientId)
+        {
+            return Context.Clients.FirstOrDefault(c => c.ClientId == clientId); // для демонстрації
+        }
+
     }
 }
-
