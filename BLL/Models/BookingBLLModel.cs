@@ -10,7 +10,7 @@ namespace BLL.Models
 
     public class BookingBLLModel
     {
-
+        public int Id { get; set; }
         public required  RoomBLLModel Room { get; set; }
 
         public required  ClientBLLModel Client { get; set; }

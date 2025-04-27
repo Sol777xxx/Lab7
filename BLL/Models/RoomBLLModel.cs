@@ -9,6 +9,7 @@ namespace BLL.Models
 {
     public class RoomBLLModel
     {
+        public int Id { get; set; }
         public RoomStatus Status { get; set; }
 
         public Categories Category { get; set; }

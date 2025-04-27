@@ -20,7 +20,7 @@ namespace BLL.FacadePattern
             _pricing = pricing ?? throw new ArgumentNullException(nameof(pricing));
         }
 
-        // ==== CLIENTS ====
+        //CLIENTS
         public void AddClient(ClientBLLModel clientModel)
         {
             var client = AutoMapper.MapToDomain(clientModel);
@@ -51,8 +51,24 @@ namespace BLL.FacadePattern
             _unitOfWork.ClientRepository.Delete(client);
             _unitOfWork.Complete();
         }
+        public List<ClientBLLModel> SearchClients(string? name, string? surname)
+        {
+            var clients = _unitOfWork.ClientRepository.GetAll().AsQueryable();
 
-        // ==== ROOMS ====
+            if (!string.IsNullOrWhiteSpace(name))
+                clients = clients.Where(c => c.Name.Contains(name.Trim()));
+
+            if (!string.IsNullOrWhiteSpace(surname))
+                clients = clients.Where(c => c.SurName.Contains(surname.Trim()));
+
+            return clients.Select(c => new ClientBLLModel
+            {
+                Name = c.Name,
+                SurName = c.SurName
+            }).ToList();
+        }
+
+        //ROOMS
         public void AddRoom(RoomBLLModel roomModel)
         {
             if (roomModel == null)
@@ -100,7 +116,7 @@ namespace BLL.FacadePattern
             }
         }
 
-        // ==== BOOKINGS ====
+        //BOOKINGS
         public bool BookRoom(int roomId, int clientId, DateTime start, DateTime end)
         {
             var room = _unitOfWork.RoomRepository.GetById(roomId);
@@ -128,7 +144,15 @@ namespace BLL.FacadePattern
             _unitOfWork.Complete();
             return true;
         }
-
+        public void DeleteBooking(int bookingId)
+        {
+            var booking = _unitOfWork.BookingRepository.GetById(bookingId);
+            if (booking != null)
+            {
+                _unitOfWork.BookingRepository.Delete(booking);
+                _unitOfWork.Complete();
+            }
+        }
         public bool CancelBooking(int bookingId)
         {
             var booking = _unitOfWork.BookingRepository.GetById(bookingId);
@@ -182,6 +206,56 @@ namespace BLL.FacadePattern
             var room = AutoMapper.MapToDomain(roomModel);
             return _pricing.CalculatePrice(room.Category);
         }
+       
+    
+        public List<BookingBLLModel> GetAllBookings()
+        {
+            return _unitOfWork.BookingRepository.GetAll()
+                .Select(b => new BookingBLLModel
+                {
+                    Room = new RoomBLLModel
+                    {
+                        Status = (BLL.Models.RoomStatus)b.Room.Status,
+                        Category = (BLL.Models.Categories)b.Room.Category,
+                        PricePerNight = b.Room.PricePerNight
+                    },
+                    Client = new ClientBLLModel
+                    {
+                        Name = b.Client.Name,
+                        SurName = b.Client.SurName
+                    },
+                    StartDate = b.StartDate,
+                    EndDate = b.EndDate,
+                    IsActive = b.IsActive
+                })
+                .ToList();
+        }
+
+        public List<ClientBLLModel> GetClientsWithActiveBookings()
+        {
+            return _unitOfWork.ClientRepository.GetAll()
+                .Where(c => c.Bookings.Any(b => b.IsActive))
+                .Select(c => new ClientBLLModel
+                {
+                    Name = c.Name,
+                    SurName = c.SurName
+                })
+                .ToList();
+        }
+
+        public RoomBLLModel? GetRoomById(int roomId)
+        {
+            var room = _unitOfWork.RoomRepository.GetById(roomId);
+            if (room == null) return null;
+
+            return new RoomBLLModel
+            {
+                Status = (BLL.Models.RoomStatus)room.Status,
+                Category = (BLL.Models.Categories)room.Category,
+                PricePerNight = room.PricePerNight
+            };
+        }
+
 
         public void Dispose()
         {

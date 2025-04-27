@@ -3,7 +3,7 @@ using Domain.Models;
 
 namespace BLL.Mappers
 {
-    public static class AutoMapper
+    public static class AutoMapper//поки що ручний. потім зміню
     {
         public static Client MapToDomain(ClientBLLModel clientModel)
         {
@@ -71,7 +71,7 @@ namespace BLL.Mappers
             if (Enum.IsDefined(typeof(BLL.Models.Categories), category))
                 return (Domain.Models.Categories)category;
 
-            return default; // або throw new ArgumentException
+            return default;
         }
 
         public static BLL.Models.Categories MapToBLL(Domain.Models.Categories category)
@@ -79,7 +79,7 @@ namespace BLL.Mappers
             if (Enum.IsDefined(typeof(Domain.Models.Categories), category))
                 return (BLL.Models.Categories)category;
 
-            return default; // або throw new ArgumentException
+            return default;
         }
 
         // Перетворення для RoomStatus (оптимізована версія)
@@ -88,7 +88,7 @@ namespace BLL.Mappers
             if (Enum.IsDefined(typeof(BLL.Models.RoomStatus), status))
                 return (Domain.Models.RoomStatus)status;
 
-            return default; // або throw new ArgumentException
+            return default;
         }
 
         public static BLL.Models.RoomStatus MapToBLL(Domain.Models.RoomStatus status)
@@ -96,7 +96,7 @@ namespace BLL.Mappers
             if (Enum.IsDefined(typeof(Domain.Models.RoomStatus), status))
                 return (BLL.Models.RoomStatus)status;
 
-            return default; // або throw new ArgumentException
+            return default;
         }
     }
 }
