@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿
 using BLL.Models;
 using BLL.StrategyPattern;
-using Domain.Models;
 using Domain.UoW;
 using BLL.Mappers;
 
@@ -74,11 +71,13 @@ namespace BLL.FacadePattern
             if (roomModel == null)
                 throw new ArgumentNullException(nameof(roomModel));
 
+            roomModel.PricePerNight = _pricing.CalculatePrice(roomModel.Category);
             var room = AutoMapper.MapToDomain(roomModel);
-            room.PricePerNight = _pricing.CalculatePrice(room.Category);
+
             _unitOfWork.RoomRepository.Create(room);
             _unitOfWork.Complete();
         }
+
 
         public List<RoomBLLModel> GetAllRooms()
         {
@@ -95,7 +94,7 @@ namespace BLL.FacadePattern
                 .ToList();
         }
 
-        public void ChangeRoomStatus(int roomId, BLL.Models.RoomStatus status)
+        public void ChangeRoomStatus(int roomId,RoomStatus status)
         {
             var room = _unitOfWork.RoomRepository.GetById(roomId);
             if (room != null)
@@ -119,31 +118,36 @@ namespace BLL.FacadePattern
         //BOOKINGS
         public bool BookRoom(int roomId, int clientId, DateTime start, DateTime end)
         {
-            var room = _unitOfWork.RoomRepository.GetById(roomId);
-            if (room == null || room.Status != Domain.Models.RoomStatus.Available)
+            var roomDomain = _unitOfWork.RoomRepository.GetById(roomId);
+            var clientDomain = _unitOfWork.ClientRepository.GetById(clientId);
+
+            if (roomDomain == null || clientDomain == null || roomDomain.Status != Domain.Models.RoomStatus.Available)
                 return false;
 
-            var client = _unitOfWork.ClientRepository.GetById(clientId);
-            if (client == null)
-                return false;
+            var roomBll = AutoMapper.MapToBLL(roomDomain);
+            var clientBll = AutoMapper.MapToBLL(clientDomain);
 
-            var booking = new Booking
+            var bookingBll = new BookingBLLModel
             {
-                RoomId = roomId,
-                ClientId = clientId,
+                Room = roomBll,
+                Client = clientBll,
                 StartDate = start,
                 EndDate = end,
-                IsActive = true,
-                Room = room,
-                Client = client
+                IsActive = true
             };
 
-            _unitOfWork.BookingRepository.Create(booking);
-            room.Status = Domain.Models.RoomStatus.Booked;
-            _unitOfWork.RoomRepository.Update(room);
+            var bookingDomain = AutoMapper.MapToDomain(bookingBll);
+            bookingDomain.RoomId = roomId;
+            bookingDomain.ClientId = clientId;
+
+            _unitOfWork.BookingRepository.Create(bookingDomain);
+            roomDomain.Status = Domain.Models.RoomStatus.Booked;
+            _unitOfWork.RoomRepository.Update(roomDomain);
+
             _unitOfWork.Complete();
             return true;
         }
+
         public void DeleteBooking(int bookingId)
         {
             var booking = _unitOfWork.BookingRepository.GetById(bookingId);
@@ -203,11 +207,10 @@ namespace BLL.FacadePattern
             if (roomModel == null)
                 throw new ArgumentNullException(nameof(roomModel));
 
-            var room = AutoMapper.MapToDomain(roomModel);
-            return _pricing.CalculatePrice(room.Category);
+            return _pricing.CalculatePrice(roomModel.Category);
         }
-       
-    
+
+
         public List<BookingBLLModel> GetAllBookings()
         {
             return _unitOfWork.BookingRepository.GetAll()
@@ -215,8 +218,8 @@ namespace BLL.FacadePattern
                 {
                     Room = new RoomBLLModel
                     {
-                        Status = (BLL.Models.RoomStatus)b.Room.Status,
-                        Category = (BLL.Models.Categories)b.Room.Category,
+                        Status = (RoomStatus)b.Room.Status,
+                        Category = (Categories)b.Room.Category,
                         PricePerNight = b.Room.PricePerNight
                     },
                     Client = new ClientBLLModel
@@ -250,8 +253,8 @@ namespace BLL.FacadePattern
 
             return new RoomBLLModel
             {
-                Status = (BLL.Models.RoomStatus)room.Status,
-                Category = (BLL.Models.Categories)room.Category,
+                Status = (RoomStatus)room.Status,
+                Category = (Categories)room.Category,
                 PricePerNight = room.PricePerNight
             };
         }

@@ -5,12 +5,14 @@ namespace BLL.Mappers
 {
     public static class AutoMapper//поки що ручний. потім зміню
     {
+
         public static Client MapToDomain(ClientBLLModel clientModel)
         {
             if (clientModel == null) return null;
 
             return new Client
             {
+                ClientId = clientModel.Id,
                 Name = clientModel.Name,
                 SurName = clientModel.SurName
             };
@@ -22,6 +24,7 @@ namespace BLL.Mappers
 
             return new ClientBLLModel
             {
+                Id = client.ClientId,
                 Name = client.Name,
                 SurName = client.SurName
             };
@@ -33,6 +36,7 @@ namespace BLL.Mappers
 
             return new Room
             {
+                RoomId = roomModel.Id, 
                 Status = MapToDomain(roomModel.Status),
                 Category = MapToDomain(roomModel.Category),
                 PricePerNight = roomModel.PricePerNight
@@ -45,11 +49,27 @@ namespace BLL.Mappers
 
             return new RoomBLLModel
             {
+                Id = room.RoomId, 
                 Status = MapToBLL(room.Status),
                 Category = MapToBLL(room.Category),
                 PricePerNight = room.PricePerNight
             };
         }
+
+        public static Booking MapToDomain(BookingBLLModel model)
+        {
+            if (model == null) return null;
+
+            return new Booking
+            {
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                IsActive = model.IsActive,
+                Room = MapToDomain(model.Room),
+                Client = MapToDomain(model.Client)
+            };
+        }
+
 
         public static BookingBLLModel MapToBLL(Booking booking)
         {
