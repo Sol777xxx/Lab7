@@ -213,25 +213,29 @@ namespace BLL.FacadePattern
 
         public List<BookingBLLModel> GetAllBookings()
         {
-            return _unitOfWork.BookingRepository.GetAll()
-                .Select(b => new BookingBLLModel
-                {
-                    Room = new RoomBLLModel
-                    {
-                        Status = (RoomStatus)b.Room.Status,
-                        Category = (Categories)b.Room.Category,
-                        PricePerNight = b.Room.PricePerNight
-                    },
-                    Client = new ClientBLLModel
-                    {
-                        Name = b.Client.Name,
-                        SurName = b.Client.SurName
-                    },
-                    StartDate = b.StartDate,
-                    EndDate = b.EndDate,
-                    IsActive = b.IsActive
-                })
-                .ToList();
+                    return _unitOfWork.BookingRepository.GetAll()
+             .Select(b => new BookingBLLModel
+             {
+                 Id = b.BookingId,
+                 Room = new RoomBLLModel
+                 {
+                     Id = b.Room.RoomId,
+                     Status = (RoomStatus)b.Room.Status,
+                     Category = (Categories)b.Room.Category,
+                     PricePerNight = b.Room.PricePerNight
+                 },
+                 Client = new ClientBLLModel
+                 {
+                     Id = b.Client.ClientId,
+                     Name = b.Client.Name,
+                     SurName = b.Client.SurName
+                 },
+                 StartDate = b.StartDate,
+                 EndDate = b.EndDate,
+                 IsActive = b.IsActive
+             })
+             .ToList();
+
         }
 
         public List<ClientBLLModel> GetClientsWithActiveBookings()
@@ -240,6 +244,7 @@ namespace BLL.FacadePattern
                 .Where(c => c.Bookings.Any(b => b.IsActive))
                 .Select(c => new ClientBLLModel
                 {
+                    Id = c.ClientId, 
                     Name = c.Name,
                     SurName = c.SurName
                 })
@@ -258,7 +263,6 @@ namespace BLL.FacadePattern
                 PricePerNight = room.PricePerNight
             };
         }
-
 
         public void Dispose()
         {

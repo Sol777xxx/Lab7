@@ -185,8 +185,9 @@ public class Menu
             foreach (var booking in bookings)
             {
                 Console.WriteLine(
-                    $"Категорія кімнати: {booking.Room.Category}, " +
-                    $"Клієнт: {booking.Client.Name} {booking.Client.SurName}, " +
+                    $"ID бронювання: {booking.Id}, " +
+                    $"ID кімнати: {booking.Room.Id} ({booking.Room.Category}), " +
+                    $"ID клієнта: {booking.Client.Id} ({booking.Client.Name} {booking.Client.SurName}), " +
                     $"Активне: {(booking.IsActive ? "Так" : "Ні")}, " +
                     $"Початок: {booking.StartDate:dd.MM.yyyy}, " +
                     $"Кінець: {booking.EndDate:dd.MM.yyyy}");
@@ -199,7 +200,7 @@ public class Menu
             var rooms = hotelService.GetAvailableRooms();
             Console.WriteLine("--- Вільні кімнати ---");
             foreach (var room in rooms)
-                Console.WriteLine($"Категорія: {room.Category}, Ціна за ніч: {room.PricePerNight} грн");
+                Console.WriteLine($"ID: {room.Id}, Категорія: {room.Category}, Ціна за ніч: {room.PricePerNight} грн");
         }
 
         private void ChangeRoomStatus()
@@ -245,7 +246,7 @@ public class Menu
             var clients = hotelService.SearchClients(name, surname);
             Console.WriteLine("--- Результати пошуку ---");
             foreach (var c in clients)
-                Console.WriteLine($"{c.Name} {c.SurName}");
+                Console.WriteLine($"ID: {c.Id}, Ім’я: {c.Name}, Прізвище: {c.SurName}");
 
         }
 
@@ -254,7 +255,7 @@ public class Menu
             var clients = hotelService.GetClientsWithActiveBookings();
             Console.WriteLine("--- Клієнти з активними бронюваннями ---");
             foreach (var c in clients)
-                Console.WriteLine($"{c.Name} {c.SurName}");
+                Console.WriteLine($"ID: {c.Id}, Ім’я: {c.Name}, Прізвище: {c.SurName}");
         }
 
 
@@ -375,7 +376,7 @@ public class Menu
             Console.WriteLine("\n--- Усі клієнти---");
             foreach (var client in clients)
             {
-                Console.WriteLine($"Ім’я: {client.Name}, Прізвище: {client.SurName}");
+                Console.WriteLine($"ID: {client.Id}, Ім’я: {client.Name}, Прізвище: {client.SurName}");
             }
         }
         private void ShowAllRooms()
@@ -386,7 +387,7 @@ public class Menu
             foreach (var room in rooms)
             {
                 decimal price = hotelService.GetRoomPrice(room);
-                Console.WriteLine($" Статус: {room.Status}, Категорія: {room.Category}, Ціна/ніч: {price} грн");
+                Console.WriteLine($"ID: {room.Id}, Статус: {room.Status}, Категорія: {room.Category}, Ціна/ніч: {price} грн");
             }
         }
 
@@ -399,12 +400,13 @@ public class Menu
 
                 foreach (var booking in bookings)
                 {
-                    Console.WriteLine($"ID: {booking.Id}, " +
-                      $"Кімната: {booking.Id}, " +
-                      $"Клієнт: ID:{booking.Id}, " +
-                      $"Активне: {(booking.IsActive ? "Так" : "Ні")}, " +
-                      $"Початок: {booking.StartDate:dd.MM.yyyy}, " +
-                      $"Кінець: {booking.EndDate:dd.MM.yyyy}");
+                    Console.WriteLine(
+                        $"ID бронювання: {booking.Id}, " +
+                        $"ID кімнати: {booking.Room.Id} ({booking.Room.Category}), " +
+                        $"ID клієнта: {booking.Client.Id} ({booking.Client.Name} {booking.Client.SurName}), " +
+                        $"Активне: {(booking.IsActive ? "Так" : "Ні")}, " +
+                        $"Початок: {booking.StartDate:dd.MM.yyyy}, " +
+                        $"Кінець: {booking.EndDate:dd.MM.yyyy}");
                 }
 
             }
