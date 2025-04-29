@@ -1,9 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Domain.Repository.BaseRepository" Collapsed="true">
-    <Position X="4.25" Y="1.25" Width="1.5" />
-    <TypeIdentifier />
-  </Class>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
   <Class Name="Domain.Repository.BookingRepository" Collapsed="true">
     <Position X="2.25" Y="2" Width="1.5" />
     <TypeIdentifier />
@@ -17,36 +13,28 @@
     <TypeIdentifier />
   </Class>
   <Class Name="Domain.Models.Booking" Collapsed="true">
-    <Position X="14.25" Y="1.5" Width="1.5" />
+    <Position X="13.75" Y="0.75" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="Domain.Models.Client" Collapsed="true">
-    <Position X="12.5" Y="1.5" Width="1.5" />
+    <Position X="12" Y="0.75" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="Domain.Models.Room" Collapsed="true">
-    <Position X="10.75" Y="1.5" Width="1.5" />
-    <TypeIdentifier />
-  </Class>
-  <Class Name="Domain.Models.RoomStatus" Collapsed="true">
-    <Position X="9" Y="2.25" Width="1.5" />
-    <TypeIdentifier />
-  </Class>
-  <Class Name="Domain.Models.Categories" Collapsed="true">
-    <Position X="9" Y="1.5" Width="1.5" />
+    <Position X="10.25" Y="0.75" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="Domain.HotelContext" Collapsed="true">
-    <Position X="12.5" Y="2.5" Width="1.5" />
+    <Position X="12" Y="1.75" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="BLL.StrategyPattern.DefaultPricing" Collapsed="true">
-    <Position X="2.25" Y="5.25" Width="1.5" />
+    <Position X="6" Y="5.25" Width="1.5" />
     <TypeIdentifier />
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="BLL.FacadePattern.HotelService" Collapsed="true">
-    <Position X="4.25" Y="4.25" Width="1.5" />
+    <Position X="1.75" Y="4.25" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="Menu" Collapsed="true">
@@ -56,8 +44,35 @@
       <FileName>Menu.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Domain.Models.RoomStatus" Collapsed="true">
+    <Position X="8.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Domain.Models.Categories" Collapsed="true">
+    <Position X="8.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Domain.Repository.GenericRepository&lt;TEntity&gt;" Collapsed="true">
+    <Position X="4.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Domain.UoW.UnitOfWork" Collapsed="true">
+    <Position X="1.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="BLL.Mappers.AutoMapper" Collapsed="true">
+    <Position X="3.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Lab4.Program" Collapsed="true">
+    <Position X="4.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Interface Name="BLL.StrategyPattern.IPricing" Collapsed="true">
-    <Position X="2.25" Y="4.25" Width="1.5" />
+    <Position X="6" Y="4.25" Width="1.5" />
     <TypeIdentifier />
   </Interface>
   <Font Name="Segoe UI" Size="9.75" />

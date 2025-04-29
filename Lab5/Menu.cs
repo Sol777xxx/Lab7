@@ -16,7 +16,7 @@ public class Menu
     public static Menu Create()
     {
         IPricing pricing = new DefaultPricing();
-        var hotelService = new HotelService(pricing); // Фасад вже інкапсулює репозиторії
+        var hotelService = new HotelService(pricing);
         return new Menu(hotelService);
     }
 
