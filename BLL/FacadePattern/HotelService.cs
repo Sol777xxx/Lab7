@@ -25,21 +25,21 @@ namespace BLL.FacadePattern
         }
 
         //CLIENTS
-        public void AddClient(ClientBLLModel clientModel)//
+        public void AddClient(ClientBLLModel clientModel)
         {
             var client = AutoMapper.MapToDomain(clientModel);
             _unitOfWork.ClientRepository.Create(client);
             _unitOfWork.Complete();
         }
 
-        public List<ClientBLLModel> GetAllClients()//
+        public List<ClientBLLModel> GetAllClients()
         {
             return _unitOfWork.ClientRepository.GetAll()
                 .Select(AutoMapper.MapToBLL)
                 .ToList();
         }
 
-        public void DeleteClient(int clientId)//
+        public void DeleteClient(int clientId)
         {
             var client = _unitOfWork.ClientRepository.GetById(clientId);
             if (client == null) return;
@@ -73,7 +73,7 @@ namespace BLL.FacadePattern
         }
 
         //ROOMS
-        public void AddRoom(RoomBLLModel roomModel)//
+        public void AddRoom(RoomBLLModel roomModel)
         {
             if (roomModel == null)
                 throw new ArgumentNullException(nameof(roomModel));
@@ -93,7 +93,7 @@ namespace BLL.FacadePattern
                 .ToList();
         }
 
-        public List<RoomBLLModel> GetAvailableRooms()//
+        public List<RoomBLLModel> GetAvailableRooms()
         {
             return _unitOfWork.RoomRepository.GetAll()
                 .Where(r => r.Status == Domain.Models.RoomStatus.Available)
@@ -101,7 +101,7 @@ namespace BLL.FacadePattern
                 .ToList();
         }
 
-        public void ChangeRoomStatus(int roomId,RoomStatus status)//
+        public void ChangeRoomStatus(int roomId,RoomStatus status)
         {
             var room = _unitOfWork.RoomRepository.GetById(roomId);
             if (room != null)
@@ -123,7 +123,7 @@ namespace BLL.FacadePattern
         }
 
         //BOOKINGS
-        public bool BookRoom(int roomId, int clientId, DateTime start, DateTime end)//
+        public bool BookRoom(int roomId, int clientId, DateTime start, DateTime end)
         {
             var roomDomain = _unitOfWork.RoomRepository.GetById(roomId);
             var clientDomain = _unitOfWork.ClientRepository.GetById(clientId);
@@ -209,7 +209,7 @@ namespace BLL.FacadePattern
                 .ToList();
         }
 
-        public decimal GetRoomPrice(RoomBLLModel roomModel)//
+        public decimal GetRoomPrice(RoomBLLModel roomModel)
         {
             if (roomModel == null)
                 throw new ArgumentNullException(nameof(roomModel));
@@ -218,7 +218,7 @@ namespace BLL.FacadePattern
         }
 
 
-        public List<BookingBLLModel> GetAllBookings()//
+        public List<BookingBLLModel> GetAllBookings()
         {
                     return _unitOfWork.BookingRepository.GetAll()
              .Select(b => new BookingBLLModel
