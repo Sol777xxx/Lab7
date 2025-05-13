@@ -3,7 +3,7 @@ using Domain.Models;
 
 namespace BLL.Mappers
 {
-    public static class AutoMapper//поки що ручний. потім можливо зміню
+    public static class AutoMapper//поки що ручний
     {
 
         public static Client MapToDomain(ClientBLLModel clientModel)
@@ -71,8 +71,8 @@ namespace BLL.Mappers
 
                 Room = room,
                 Client = client,
-                RoomId = room?.RoomId ?? 0,     // Заповнюємо RoomId
-                ClientId = client?.ClientId ?? 0 // Заповнюємо ClientId
+                RoomId = room?.RoomId ?? 0,
+                ClientId = client?.ClientId ?? 0 
             };
         }
 
