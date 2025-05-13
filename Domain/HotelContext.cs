@@ -13,7 +13,7 @@ namespace Domain
         public HotelContext()
         {
             DataBasePath =
-                "C:\\Users\\Asus\\Desktop\\Поточні дз\\2Course2\\ArhitecLabs\\Lab4All\\Domain\\hotel.db";
+                "C:\\Users\\Asus\\Desktop\\Поточні дз\\2Course2\\ArhitecLabs\\Lab6All\\Domain\\hotel.db";
         }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

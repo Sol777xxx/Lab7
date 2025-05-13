@@ -67,9 +67,11 @@ namespace BLL.FacadePattern
 
             return clients.Select(c => new ClientBLLModel
             {
+                Id = c.ClientId,
                 Name = c.Name,
                 SurName = c.SurName
             }).ToList();
+
         }
 
         //ROOMS
@@ -144,16 +146,19 @@ namespace BLL.FacadePattern
             };
 
             var bookingDomain = AutoMapper.MapToDomain(bookingBll);
-            bookingDomain.RoomId = roomId;
-            bookingDomain.ClientId = clientId;
+
+            bookingDomain.Room = roomDomain;
+            bookingDomain.Client = clientDomain;
 
             _unitOfWork.BookingRepository.Create(bookingDomain);
+
             roomDomain.Status = Domain.Models.RoomStatus.Booked;
             _unitOfWork.RoomRepository.Update(roomDomain);
 
             _unitOfWork.Complete();
             return true;
         }
+
 
         public void DeleteBooking(int bookingId)
         {

@@ -110,9 +110,9 @@ namespace Tests
         {
             var clients = new List<Client>
             {
-                new Client { Name = "Іван", SurName = "Іванов" },
-                new Client { Name = "Петро", SurName = "Петров" },
-                new Client { Name = "Іван", SurName = "Сидоров" }
+                new Client { ClientId = 1, Name = "Іван", SurName = "Іванов" },
+                new Client { ClientId = 2, Name = "Петро", SurName = "Петров" },
+                new Client { ClientId = 3, Name = "Іван", SurName = "Сидоров" }
             };
 
             clientRepoMock.Setup(r => r.GetAll()).Returns(clients);
@@ -121,7 +121,11 @@ namespace Tests
 
             Assert.Equal(2, result.Count);
             Assert.All(result, c => Assert.Contains("Іван", c.Name));
+
+            Assert.Contains(result, c => c.Id == 1);
+            Assert.Contains(result, c => c.Id == 3);
         }
+
         [Fact]
         public void GetClientsWithActiveBookings_ShouldReturnClientsWithActiveBookings()
         {

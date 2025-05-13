@@ -60,13 +60,19 @@ namespace BLL.Mappers
         {
             if (model == null) return null;
 
+            var room = MapToDomain(model.Room);
+            var client = MapToDomain(model.Client);
+
             return new Booking
             {
                 StartDate = model.StartDate,
                 EndDate = model.EndDate,
                 IsActive = model.IsActive,
-                Room = MapToDomain(model.Room),
-                Client = MapToDomain(model.Client)
+
+                Room = room,
+                Client = client,
+                RoomId = room?.RoomId ?? 0,     // Заповнюємо RoomId
+                ClientId = client?.ClientId ?? 0 // Заповнюємо ClientId
             };
         }
 
