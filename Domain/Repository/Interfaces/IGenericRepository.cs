@@ -1,8 +1,6 @@
-﻿
-
-namespace Domain.Repository
+﻿namespace Domain.Repository.Interfaces
 {
-    internal interface IGenericRepository<TEntity> where TEntity : class
+    public interface IGenericRepository<TEntity> where TEntity : class
     {
         TEntity? GetById(int id);
         IEnumerable<TEntity> GetAll();

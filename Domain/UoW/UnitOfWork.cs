@@ -1,22 +1,22 @@
 ﻿using Domain.Models;
 using Domain.Repository;
-using System;
+using Domain.Repository.Interfaces;
 
 namespace Domain.UoW
 {
-    public class UnitOfWork : IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly HotelContext _context;
         private bool _disposedValue;
-        //Singleton
-        private GenericRepository<Room> _roomRepository;
-        public GenericRepository<Room> RoomRepository=> _roomRepository ??= new GenericRepository<Room>(_context);
 
-        private GenericRepository<Client> _clientRepository;
-        public GenericRepository<Client> ClientRepository => _clientRepository ??= new GenericRepository<Client>(_context);
+        private IRoomRepository _roomRepository;
+        public IRoomRepository RoomRepository => _roomRepository ??= new RoomRepository(_context);
 
-        private GenericRepository<Booking> _bookingRepository;
-        public GenericRepository<Booking> BookingRepository => _bookingRepository ??= new GenericRepository<Booking>(_context);
+        private IClientRepository _clientRepository;
+        public IClientRepository ClientRepository => _clientRepository ??= new ClientRepository(_context);
+
+        private IBookingRepository _bookingRepository;
+        public IBookingRepository BookingRepository => _bookingRepository ??= new BookingRepository(_context);
 
         public UnitOfWork()
         {
@@ -40,6 +40,7 @@ namespace Domain.UoW
                 _disposedValue = true;
             }
         }
+
         public void Dispose()
         {
             Dispose(disposing: true);

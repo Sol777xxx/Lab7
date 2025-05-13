@@ -1,9 +1,10 @@
 ﻿using Domain.Models;
+using Domain.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Repository
 {
-    public class RoomRepository : GenericRepository<Room>
+    public class RoomRepository : GenericRepository<Room>, IRoomRepository
     {
         public RoomRepository(HotelContext context) : base(context)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Repository
 {

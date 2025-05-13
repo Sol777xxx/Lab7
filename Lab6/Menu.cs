@@ -6,20 +6,18 @@ using System;
 
 public class Menu
 {
-
     private readonly HotelService hotelService;
 
     private Menu(HotelService service)
     {
         hotelService = service;
     }
+
     public static Menu Create()
     {
-        IPricing pricing = new DefaultPricing();
-        var hotelService = new HotelService(pricing);
+        var hotelService = HotelService.CreateWithDefaults();
         return new Menu(hotelService);
     }
-
 
     public void ShowMenu()
     {

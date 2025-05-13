@@ -1,10 +1,11 @@
 ﻿using Domain.Models;
+using Domain.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace Domain.Repository
 {
-    public class ClientRepository : GenericRepository<Client>
+    public class ClientRepository : GenericRepository<Client>, IClientRepository
     {
         public ClientRepository(HotelContext context) : base(context)
         {
