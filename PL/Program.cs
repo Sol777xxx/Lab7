@@ -27,8 +27,8 @@ namespace PL
 
             if (app.Environment.IsDevelopment())
             {
-                app.UseSwagger(); // <- Реєструє swagger.json
-                app.UseSwaggerUI(); // <- UI для браузера
+                app.UseSwagger(); 
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();

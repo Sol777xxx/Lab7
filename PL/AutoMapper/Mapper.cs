@@ -24,8 +24,8 @@ namespace PL.AutoMapper
                 .ForMember(dest => dest.ClientName, opt => opt.MapFrom(src => $"{src.Client.Name} {src.Client.SurName}"))
                 .ForMember(dest => dest.RoomCategory, opt => opt.MapFrom(src => src.Room.Category.ToString()))
                 .ReverseMap()
-                .ForMember(dest => dest.Client, opt => opt.Ignore()) // Мапити вручну або через сервіс
-                .ForMember(dest => dest.Room, opt => opt.Ignore()); // Мапити вручну або через сервіс
+                .ForMember(dest => dest.Client, opt => opt.Ignore()) 
+                .ForMember(dest => dest.Room, opt => opt.Ignore());
         }
     }
 

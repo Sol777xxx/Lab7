@@ -2,7 +2,7 @@
 {
     public class RoomDto
     {
-        public int Id { get; set; }   // для GET/PUT
+        public int Id { get; set; }
         public RoomStatusDto Status { get; set; }
         public CategoriesDto Category { get; set; }
         public decimal PricePerNight { get; set; }
