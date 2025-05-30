@@ -9,7 +9,12 @@ namespace UI
 
         private void openBookingsButton_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            Hide();
+            using (var form = new BookingsForm())
+            {
+                form.ShowDialog();
+            }
+            Show();
         }
 
         private void openClientsButton_Click(object sender, EventArgs e)
@@ -25,7 +30,7 @@ namespace UI
         {
 
             Hide();
-            using (var form = new BookingsForm())
+            using (var form = new RoomsForm())
             {
                 form.ShowDialog();
             }

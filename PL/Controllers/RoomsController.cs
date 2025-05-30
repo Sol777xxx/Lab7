@@ -56,14 +56,13 @@ namespace PL.Controllers
             return Ok();
         }
 
-        [HttpGet("{id}/price")]
-        public IActionResult GetRoomPrice(int id)
+        [HttpGet("price-by-category")]
+        public IActionResult GetPriceByCategory([FromQuery] CategoriesPL category)
         {
-            var room = _hotelService.GetRoomById(id);
-            if (room == null)
-                return NotFound();
-
-            return Ok(_hotelService.GetRoomPrice(room));
+            var model = new RoomBLLModel { Category = _mapper.Map<Categories>(category) };
+            var price = _hotelService.GetRoomPrice(model);
+            return Ok(price);
         }
+
     }
 }

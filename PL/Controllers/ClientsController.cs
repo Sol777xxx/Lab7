@@ -25,6 +25,20 @@ namespace PL.Controllers
             var clients = _hotelService.GetAllClients();
             return Ok(_mapper.Map<List<ClientPL>>(clients));
         }
+        [HttpGet("search")]
+        public ActionResult<IEnumerable<ClientPL>> Search([FromQuery] string? name, [FromQuery] string? surname)
+        {
+            var clients = _hotelService.SearchClients(name ?? "", surname ?? "");
+            return Ok(_mapper.Map<List<ClientPL>>(clients));
+        }
+
+        [HttpGet("active-bookings")]
+        public ActionResult<IEnumerable<ClientPL>> GetClientsWithActiveBookings()
+        {
+            var clients = _hotelService.GetClientsWithActiveBookings();
+            return Ok(_mapper.Map<List<ClientPL>>(clients));
+        }
+
 
         [HttpPost]
         public IActionResult AddClient([FromBody] ClientPL dto)
