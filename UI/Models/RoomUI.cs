@@ -1,20 +1,20 @@
-﻿namespace PL.Models
+﻿namespace UI.Models
 {
-    public class RoomDto
+    public class RoomUI
     {
         public int Id { get; set; }
-        public RoomStatusDto Status { get; set; }
-        public CategoriesDto Category { get; set; }
+        public RoomStatusUI Status { get; set; }
+        public CategoriesUI Category { get; set; }
         public decimal PricePerNight { get; set; }
     }
-    public enum RoomStatusDto
+    public enum RoomStatusUI
     {
         Available,
         Booked,
         Occupied
     }
 
-    public enum CategoriesDto
+    public enum CategoriesUI
     {
         Cheap,
         Standard,

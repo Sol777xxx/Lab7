@@ -20,14 +20,14 @@ namespace PL.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<ClientDto>> GetClients()
+        public ActionResult<IEnumerable<ClientPL>> GetClients()
         {
             var clients = _hotelService.GetAllClients();
-            return Ok(_mapper.Map<List<ClientDto>>(clients));
+            return Ok(_mapper.Map<List<ClientPL>>(clients));
         }
 
         [HttpPost]
-        public IActionResult AddClient([FromBody] ClientDto dto)
+        public IActionResult AddClient([FromBody] ClientPL dto)
         {
             var model = _mapper.Map<ClientBLLModel>(dto);
             _hotelService.AddClient(model);

@@ -19,21 +19,21 @@ namespace PL.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<BookingDto>> GetAllBookings()
+        public ActionResult<IEnumerable<BookingPL>> GetAllBookings()
         {
             var bookings = _hotelService.GetAllBookings();
-            return Ok(_mapper.Map<List<BookingDto>>(bookings));
+            return Ok(_mapper.Map<List<BookingPL>>(bookings));
         }
 
         [HttpGet("active")]
-        public ActionResult<IEnumerable<BookingDto>> GetActiveBookings()
+        public ActionResult<IEnumerable<BookingPL>> GetActiveBookings()
         {
             var bookings = _hotelService.GetActiveBookings();
-            return Ok(_mapper.Map<List<BookingDto>>(bookings));
+            return Ok(_mapper.Map<List<BookingPL>>(bookings));
         }
 
         [HttpPost]
-        public IActionResult BookRoom([FromBody] BookingDto dto)
+        public IActionResult BookRoom([FromBody] BookingPL dto)
         {
             bool success = _hotelService.BookRoom(dto.RoomId, dto.ClientId, dto.StartDate, dto.EndDate);
             if (success)

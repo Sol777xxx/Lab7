@@ -20,21 +20,21 @@ namespace PL.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<RoomDto>> GetAllRooms()
+        public ActionResult<IEnumerable<RoomPL>> GetAllRooms()
         {
             var rooms = _hotelService.GetAllRooms();
-            return Ok(_mapper.Map<List<RoomDto>>(rooms));
+            return Ok(_mapper.Map<List<RoomPL>>(rooms));
         }
 
         [HttpGet("available")]
-        public ActionResult<IEnumerable<RoomDto>> GetAvailableRooms()
+        public ActionResult<IEnumerable<RoomPL>> GetAvailableRooms()
         {
             var rooms = _hotelService.GetAvailableRooms();
-            return Ok(_mapper.Map<List<RoomDto>>(rooms));
+            return Ok(_mapper.Map<List<RoomPL>>(rooms));
         }
 
         [HttpPost]
-        public IActionResult AddRoom([FromBody] RoomDto dto)
+        public IActionResult AddRoom([FromBody] RoomPL dto)
         {
             var model = _mapper.Map<RoomBLLModel>(dto);
             _hotelService.AddRoom(model);
@@ -49,7 +49,7 @@ namespace PL.Controllers
         }
 
         [HttpPut("{id}/status")]
-        public IActionResult ChangeStatus(int id, [FromQuery] RoomStatusDto status)
+        public IActionResult ChangeStatus(int id, [FromQuery] RoomStatusPL status)
         {
             var statusEnum = _mapper.Map<RoomStatus>(status);
             _hotelService.ChangeRoomStatus(id, statusEnum);

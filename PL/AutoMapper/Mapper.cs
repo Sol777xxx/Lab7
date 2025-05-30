@@ -10,15 +10,15 @@ namespace PL.AutoMapper
         public Mapper()
         {
             // Client
-            CreateMap<ClientBLLModel, ClientDto>().ReverseMap();
+            CreateMap<ClientBLLModel, ClientPL>().ReverseMap();
 
             // Room
-            CreateMap<RoomBLLModel, RoomDto>().ReverseMap();
-            CreateMap<RoomStatus, RoomStatusDto>().ReverseMap();
-            CreateMap<Categories, CategoriesDto>().ReverseMap();
+            CreateMap<RoomBLLModel, RoomPL>().ReverseMap();
+            CreateMap<RoomStatus, RoomStatusPL>().ReverseMap();
+            CreateMap<Categories, CategoriesPL>().ReverseMap();
 
             // Booking
-            CreateMap<BookingBLLModel, BookingDto>()
+            CreateMap<BookingBLLModel, BookingPL>()
                 .ForMember(dest => dest.ClientId, opt => opt.MapFrom(src => src.Client.Id))
                 .ForMember(dest => dest.RoomId, opt => opt.MapFrom(src => src.Room.Id))
                 .ForMember(dest => dest.ClientName, opt => opt.MapFrom(src => $"{src.Client.Name} {src.Client.SurName}"))

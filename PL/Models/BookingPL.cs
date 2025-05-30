@@ -1,6 +1,6 @@
 ﻿namespace PL.Models
 {
-    public class BookingDto
+    public class BookingPL
     {
         public int Id { get; set; } 
         public int ClientId { get; set; }

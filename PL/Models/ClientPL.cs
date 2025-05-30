@@ -1,6 +1,6 @@
 ﻿namespace PL.Models
 {
-    public class ClientDto
+    public class ClientPL
     {
         public int Id { get; set; } 
         public string Name { get; set; }
