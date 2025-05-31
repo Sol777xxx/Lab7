@@ -49,14 +49,23 @@ namespace UI
 
         private async void addButton_Click(object sender, EventArgs e)
         {
-            var dialog = MessageBox.Show("Додати кімнату з категорією 'Standard'?", "Додати кімнату", MessageBoxButtons.YesNo);
-            if (dialog != DialogResult.Yes) return;
+            if (categoryComboBox.SelectedItem is not string selectedCategory)
+            {
+                MessageBox.Show("Оберіть категорію кімнати.");
+                return;
+            }
+
+            if (!Enum.TryParse<CategoriesPL>(selectedCategory, out var category))
+            {
+                MessageBox.Show("Невірна категорія.");
+                return;
+            }
 
             var dto = new RoomPL
             {
-                Category = CategoriesPL.Standard,
+                Category = category,
                 Status = RoomStatusPL.Available,
-                PricePerNight = 0 // автоматично підраховується в BLL
+                PricePerNight = 0 // буде розраховано в BLL
             };
 
             try
@@ -72,6 +81,7 @@ namespace UI
                 MessageBox.Show($"Помилка додавання: {ex.Message}");
             }
         }
+
 
         private async void deleteButton_Click(object sender, EventArgs e)
         {

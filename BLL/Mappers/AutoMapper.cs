@@ -83,6 +83,7 @@ namespace BLL.Mappers
 
             return new BookingBLLModel
             {
+                Id = booking.BookingId,
                 Room = MapToBLL(booking.Room),
                 Client = MapToBLL(booking.Client),
                 StartDate = booking.StartDate,
