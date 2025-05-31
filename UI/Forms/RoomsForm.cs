@@ -23,7 +23,6 @@ namespace UI
             {
                 var result = await _http.GetFromJsonAsync<List<RoomPL>>("api/rooms");
                 var mapped = Program.Mapper.Map<List<RoomUI>>(result);
-                PrepareGridIfNeeded();
                 roomsGrid.DataSource = mapped;
             }
             catch (Exception ex)
@@ -38,7 +37,6 @@ namespace UI
             {
                 var result = await _http.GetFromJsonAsync<List<RoomPL>>("api/rooms/available");
                 var mapped = Program.Mapper.Map<List<RoomUI>>(result);
-                PrepareGridIfNeeded();
                 roomsGrid.DataSource = mapped;
             }
             catch (Exception ex)
@@ -55,18 +53,21 @@ namespace UI
                 return;
             }
 
-            if (!Enum.TryParse<CategoriesPL>(selectedCategory, out var category))
+            if (!Enum.TryParse<CategoriesUI>(selectedCategory, out var category))
             {
                 MessageBox.Show("Невірна категорія.");
                 return;
             }
 
-            var dto = new RoomPL
+            
+            var roomUI = new RoomUI
             {
                 Category = category,
-                Status = RoomStatusPL.Available,
-                PricePerNight = 0 // буде розраховано в BLL
+                Status = RoomStatusUI.Available,
+                PricePerNight = 0// буде розраховано в BLL
             };
+
+            var dto = Program.Mapper.Map<RoomPL>(roomUI);
 
             try
             {
@@ -180,36 +181,6 @@ namespace UI
         {
             loadAllButton_Click(this, EventArgs.Empty);
             await Task.CompletedTask;
-        }
-
-        private void PrepareGridIfNeeded()
-        {
-            if (roomsGrid.Columns.Count == 0)
-            {
-                roomsGrid.AutoGenerateColumns = false;
-                roomsGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-                roomsGrid.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = "Id",
-                    HeaderText = "ID",
-                    Width = 60
-                });
-                roomsGrid.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = "Status",
-                    HeaderText = "Статус"
-                });
-                roomsGrid.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = "Category",
-                    HeaderText = "Категорія"
-                });
-                roomsGrid.Columns.Add(new DataGridViewTextBoxColumn
-                {
-                    DataPropertyName = "PricePerNight",
-                    HeaderText = "Ціна/ніч"
-                });
-            }
         }
 
         private void statusComboBox_SelectedIndexChanged(object sender, EventArgs e)

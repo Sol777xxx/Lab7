@@ -46,6 +46,7 @@
             roomsGrid.RowHeadersWidth = 82;
             roomsGrid.Size = new Size(994, 770);
             roomsGrid.TabIndex = 0;
+            roomsGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             // 
             // loadAllButton
             // 

@@ -83,7 +83,10 @@ namespace UI
                 return;
             }
 
-            var dto = new ClientPL { Name = name, SurName = surname };
+            var clientUI = new ClientUI { Name = name, SurName = surname };
+            var dto = Program.Mapper.Map<ClientPL>(clientUI);
+
+
 
             try
             {

@@ -53,13 +53,16 @@ namespace UI
                 return;
             }
 
-            var dto = new BookingPL
+            var bookingUI = new BookingUI
             {
                 RoomId = roomId,
                 ClientId = clientId,
                 StartDate = startDatePicker.Value.Date,
                 EndDate = endDatePicker.Value.Date
             };
+
+            var dto = Program.Mapper.Map<BookingPL>(bookingUI);
+
 
             try
             {

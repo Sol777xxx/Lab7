@@ -73,7 +73,7 @@
             deleteButton.Name = "deleteButton";
             deleteButton.Size = new Size(290, 50);
             deleteButton.TabIndex = 3;
-            deleteButton.Text = "Видалити за ID";
+            deleteButton.Text = "Видалити";
             deleteButton.Click += deleteButton_Click;
             // 
             // searchButton
